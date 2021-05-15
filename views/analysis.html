@@ -1,0 +1,58 @@
+<% include header.html %>
+
+  <header class="pb-3 mb-4 border-bottom">
+    <h1 class="h4">
+      <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+        <span>
+          Analysis your own!
+        </span>
+      </a>
+    </h1>
+  </header>
+
+  <div class="row">
+    <div class="col-md-12">
+      <p class="lead">Content.</p>
+    </div>
+  </div>
+
+  <!-- <button type="button" class="btn btn-primary mr-3" data-toggle="modal" data-target="#exampleModal">Toggle
+    example
+    modal</button>
+  <a href="" class="text-success">How to</a> -->
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Success!</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          If you're seeing this modal after clicking the button on the page, Bootstrap's CSS and JS are both
+          working
+          properly.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <hr class="my-5 w-25 mx-0"> -->
+
+  <div class="row">
+    <div class="col-md-12">
+      <!-- <h2>Fill in your SNPs!</h2> -->
+
+      <div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" id="map_window"
+          class="embed-responsive-item" src="/error"></iframe></div>
+    </div>
+  </div>
+
+  <% include footer.html %>

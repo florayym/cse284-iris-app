@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET home page. */
+/* GET world page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'H+Iris', pid: 0 });
+  res.render('world', { title: 'H+Iris', pid: 1 });
 });
 
 module.exports = router;
