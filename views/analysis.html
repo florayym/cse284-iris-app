@@ -1,5 +1,109 @@
 <% include header.html %>
 
+  <script>
+    function predict_phenotype() {
+
+      let MC1R_R = ['rs201326893', 'rs312262906', 'rs1805006', 'rs11547464', 'rs1805007', 'rs1805008', 'rs1805009'];
+      let MC1R_r = ['rs1805005', 'rs2228479', 'rs1110400', 'rs885479'];
+
+      let num_minor_alleles = [];
+
+      // TODO the method for MC1R
+      let not_missing = 0;
+      for (const snp of MC1R_R) {
+        let val = document.getElementById(snp).value;
+        if (val == 'Choose') {
+          alert('Please choose all the fields!');
+          return;
+        }
+        if (val != 'NA') {
+          not_missing++;
+          if (val == 0) {
+            num_minor_alleles.push(0);
+          }
+        }
+      }
+
+      let snps = ['rs12913832', 'rs12203592', 'rs1042602', 'rs4959270', 'rs28777', 'rs683', 'rs1800407', 'rs2402130', 'rs12821256', 'rs16891982', 'rs2378249'];
+
+      for (const snp of snps) {
+        let val = document.getElementById(snp).value;
+        if (val == 'Choose') {
+          alert('Please choose all the fields!');
+          return;
+        }
+
+        // TODO should NA be treated as 0?
+        if (val == 'NA') {
+          val = 0;
+        }
+        num_minor_alleles.push(parseInt(val));
+      }
+
+      // Update components
+      enableBtn(false);
+      var spinner = document.getElementsByClassName("glyphicon")[0];
+      spinner.style.display = "inline-block";
+      document.body.style.cursor = 'progress';
+
+      var progress = document.getElementsByClassName("alert")[0];
+      progress.style = "display: block;";
+      progress.style.whiteSpace = "pre";
+      progress.textContent = "In progress...";
+      progress.classList.remove("alert-danger");
+
+      // XML HttpRequest
+      const xhr = new XMLHttpRequest(),
+        method = 'POST',
+        url = 'predict-phenotype';
+
+      xhr.addEventListener("loadstart", handleEvent);
+      xhr.addEventListener("load", handleEvent);
+      xhr.addEventListener("loadend", handleEvent);
+      xhr.addEventListener("progress", handleEvent);
+      xhr.addEventListener("error", handleEvent);
+      xhr.addEventListener("abort", handleEvent);
+
+      xhr.open(method, url, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState < 4) {
+          progress.textContent = progress.textContent + `\r\n${xhr.readyState} ${xhr.statusText}`;
+        } else if (xhr.readyState == XMLHttpRequest.DONE) {
+          var status = xhr.status;
+          if (status === 0 || (status >= 200 && status < 400)) {
+            console.log(xhr.responseText);
+
+            let display_tbody = document.getElementsByTagName('tbody')[1];
+            display_tbody.innerHTML = xhr.responseText;
+
+            enableBtn(true);
+            spinner.style.display = "none";
+            document.body.style.cursor = 'default';
+            progress.style = "display: none;";
+
+            let display_table = document.getElementById("display_predicted_result");
+            display_table.style = "display: block;";
+          } else {
+            progress.classList.add("alert-danger");
+          }
+        }
+      }
+      xhr.send(JSON.stringify(num_minor_alleles));
+    }
+
+    function handleEvent(e) {
+      var progress = document.getElementsByClassName("alert")[0];
+      progress.textContent = progress.textContent + `\r\n${e.type}: ${e.loaded} bytes transferred`;
+    }
+
+    function enableBtn(enable) {
+      analysis_btn = document.getElementById("analysis_btn");
+      analysis_btn.disabled = !enable;
+    }
+  </script>
+
   <header class="pb-3 mb-4 border-bottom">
     <h1 class="h4">
       <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
@@ -12,16 +116,431 @@
 
   <div class="row">
     <div class="col-md-12">
-      <p class="lead">Content.</p>
+      <p class="lead">Please input your number of alleles for each SNP.</p>
     </div>
   </div>
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Gene</th>
+        <th scope="col">SNP</th>
+        <th scope="col">Minor Allele</th>
+        <th scope="col"># of Minor Alleles</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- MC1R_R -->
+      <tr>
+        <th scope="row">1</th>
+        <td>MC1R</td>
+        <td>rs201326893</td>
+        <td>R</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs201326893">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td>MC1R</td>
+        <td>rs312262906</td>
+        <td>R</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs312262906">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">3</th>
+        <td>MC1R</td>
+        <td>rs1805006</td>
+        <td>R</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs1805006">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">4</th>
+        <td>MC1R</td>
+        <td>rs11547464</td>
+        <td>R</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs11547464">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">5</th>
+        <td>MC1R</td>
+        <td>rs1805007</td>
+        <td>R</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs1805007">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">6</th>
+        <td>MC1R</td>
+        <td>rs1805008</td>
+        <td>R</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs1805008">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">7</th>
+        <td>MC1R</td>
+        <td>rs1805009</td>
+        <td>R</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs1805009">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <!-- other snps -->
+      <tr>
+        <th scope="row">8</th>
+        <td>HERC2</td>
+        <td>rs12913832</td>
+        <td>T</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs12913832">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">9</th>
+        <td>IRF4</td>
+        <td>rs12203592</td>
+        <td>T</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs12203592">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">10</th>
+        <td>TYR</td>
+        <td>rs1042602</td>
+        <td>A</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs1042602">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">11</th>
+        <td>EXOC2</td>
+        <td>rs4959270</td>
+        <td>A</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs4959270">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">12</th>
+        <td>SLC45A2</td>
+        <td>rs28777</td>
+        <td>C</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs28777">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">13</th>
+        <td>TYRP1</td>
+        <td>rs683</td>
+        <td>C</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs683">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">14</th>
+        <td>OCA2</td>
+        <td>rs1800407</td>
+        <td>T</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs1800407">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <!-- MC1R_r -->
+      <tr>
+        <th scope="row">15</th>
+        <td>MC1R</td>
+        <td>rs1805005</td>
+        <td>r</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs1805005">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">16</th>
+        <td>MC1R</td>
+        <td>rs2228479</td>
+        <td>r</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs2228479">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">17</th>
+        <td>MC1R</td>
+        <td>rs1110400</td>
+        <td>r</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs1110400">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">18</th>
+        <td>MC1R</td>
+        <td>rs885479</td>
+        <td>r</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs885479">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <!-- other snps -->
+      <tr>
+        <th scope="row">19</th>
+        <td>SLC24A4</td>
+        <td>rs2402130</td>
+        <td>G</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs2402130">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">20</th>
+        <td>KITLG</td>
+        <td>rs12821256</td>
+        <td>C</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs12821256">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">21</th>
+        <td>SLC45A2</td>
+        <td>rs16891982</td>
+        <td>C</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs16891982">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">22</th>
+        <td>ASIP</td>
+        <td>rs2378249</td>
+        <td>G</td>
+        <td>
+          <div class="input-group mb-3">
+            <select class="form-select" id="rs2378249">
+              <option selected>Choose</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="NA">NA</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <button id="analysis_btn" type="button" class="btn btn-primary" onclick="predict_phenotype()">Analysis!&nbsp;
+    <span class="glyphicon glyphicon-refresh"
+      style="display: none; animation: spinning .9s infinite linear; -webkit-animation: spinning .9s infinite linear;"
+      aria-hidden="true">
+    </span>
+  </button>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="alert alert-info" role="alert" style="display: none;"></div>
+    </div>
+  </div>
+
+  <table class="table table-striped table-hover" style="display: none;" id="display_predicted_result">
+    <thead>
+      <tr>
+        <th scope="col">Hair color</th>
+        <th scope="col">Probability</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
 
   <!-- <button type="button" class="btn btn-primary mr-3" data-toggle="modal" data-target="#exampleModal">Toggle
     example
     modal</button>
   <a href="" class="text-success">How to</a> -->
 
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  <!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -42,17 +561,8 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <!-- <hr class="my-5 w-25 mx-0"> -->
-
-  <div class="row">
-    <div class="col-md-12">
-      <!-- <h2>Fill in your SNPs!</h2> -->
-
-      <div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" id="map_window"
-          class="embed-responsive-item" src="/error"></iframe></div>
-    </div>
-  </div>
 
   <% include footer.html %>

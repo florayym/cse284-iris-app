@@ -8,6 +8,7 @@ var sassMiddleware = require('node-sass-middleware');
 var indexRouter = require('./routes/index');
 var worldRouter = require('./routes/world');
 var analysisRouter = require('./routes/analysis');
+var predictRouter = require('./routes/predict_phenotype');
 
 var app = express();
 
@@ -34,6 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/world', worldRouter);
 app.use('/analysis', analysisRouter);
+app.use('/predict-phenotype', predictRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
