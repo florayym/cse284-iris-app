@@ -30,12 +30,78 @@
     </div>
   </main>
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" id="map_window"
-          class="embed-responsive-item" src="/error"></iframe></div>
-    </div>
-  </div>
+<script type="text/javascript">
+var width = 960;
+var height = 500;
+var radius = 30;
+
+// SVG variables
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var g1 = svg.append("g"); // background
+var g2 = svg.append("g"); // pie charts
+
+// Projection variables 
+// Here I want the whole world so everything 
+
+var projection = d3.geoMercator();
+var path = d3.geoPath().projection(projection);
+
+// Pie chart variables:
+var arc = d3.arc()
+            .innerRadius(0)
+            .outerRadius(radius);
+
+var pie = d3.pie()
+            .sort(null)
+            .value(function(d) { return d; });
+
+var color = d3.schemePaired;
+
+// Draw geographic features 
+d3.json("https://unpkg.com/world-atlas@1/world/110m.json", function(error, world) {
+    g1.insert("path", ".land")
+        .datum(topojson.feature(world, world.objects.countries))
+        .attr("class", "land")
+        .attr("d", path);
+
+    g1.append("path")
+      .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
+      .attr("class", "mesh")
+      .attr("d", path);
+});
+
+// Draw pie charts 
+d3.csv("population_predictions.csv", function(error, predictions) {
+  var points = g2.selectAll("g")
+    .data(predictions)
+    .enter()
+    .append("g")
+    .attr("transform", function(d) { return "translate("+projection([d.Longitude, d.Latitude])+")"})
+    .attr("class", "pies")
+
+  points.append("text")
+    .attr("y", -radius- 5)
+    .text(function(d) {return d.population})
+    .style('text-anchor', 'middle'); 
+  
+  var pies = points.selectAll(".pies") 
+    .data(function(d) {return pie(d.pBlond); })
+    .enter()
+    .append("g")
+    .attr("class", "arc")
+
+  pies.append("path")
+    .attr('d',arc)
+      .attr("fill", function(d, i){
+           return color[i+1];
+      });
+});
+</script>
+
+      
 
   <!-- <hr class="my-5"> -->
 
@@ -45,5 +111,5 @@
       <p class="lead">Content.</p>
     </div>
   </div>
-
+      
   <% include footer.html %>
