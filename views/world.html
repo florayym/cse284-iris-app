@@ -33,7 +33,7 @@
 <script type="text/javascript">
 var width = 960;
 var height = 500;
-var radius = 30;
+var radius = 15;
 
 // SVG variables
 var svg = d3.select("body").append("svg")
@@ -57,8 +57,8 @@ var arc = d3.arc()
 var pie = d3.pie()
             .sort(null)
             .value(function(d) { return d; });
-
-var color = d3.schemePaired;
+    
+var color = ["#f9dc53", "#663333", "#b03900", '#1a0d00']
 
 // Draw geographic features 
 d3.json("https://unpkg.com/world-atlas@1/world/110m.json", function(error, world) {
@@ -72,9 +72,11 @@ d3.json("https://unpkg.com/world-atlas@1/world/110m.json", function(error, world
       .attr("class", "mesh")
       .attr("d", path);
 });
-
+    
 // Draw pie charts 
 d3.csv("population_predictions.csv", function(error, predictions) {
+  console.log(pie(predictions))
+    
   var points = g2.selectAll("g")
     .data(predictions)
     .enter()
@@ -88,16 +90,14 @@ d3.csv("population_predictions.csv", function(error, predictions) {
     .style('text-anchor', 'middle'); 
   
   var pies = points.selectAll(".pies") 
-    .data(function(d) {return pie(d.pBlond); })
+    .data(function(d) {return pie([d.pBlond, d.pBrown, d.pRed, d.pBlack]); })
     .enter()
     .append("g")
     .attr("class", "arc")
 
   pies.append("path")
     .attr('d',arc)
-      .attr("fill", function(d, i){
-           return color[i+1];
-      });
+      .attr("fill", function(d,i) {return color[i]});
 });
 </script>
 
