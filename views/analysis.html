@@ -18,10 +18,10 @@
           alert('Please fill in all the fields!');
           return;
         }
-        if (val === 2) {
+        if (val === '2') {
           num_minor_alleles.push(2);
           break;
-        } else if (val === 1) {
+        } else if (val === '1') {
           num_heterozygote++;
           // compound heterozygote
           if (num_heterozygote === 2) {
@@ -32,8 +32,8 @@
           na++;
         }
       }
-      if (num_minor_alleles.length == 0) {
-        if (num_heterozygote == 1) {
+      if (num_minor_alleles.length === 0) {
+        if (num_heterozygote === 1) {
           num_minor_alleles.push(1);
         } else if (na < MC1R_R.length) {
           num_minor_alleles.push(0);
@@ -51,13 +51,13 @@
           alert('Please fill in all the fields!');
           return;
         }
-        if (val === 2) {
+        if (val === '2') {
           num_minor_alleles.push(2);
           break;
-        } else if (val === 1) {
+        } else if (val === '1') {
           num_heterozygote++;
           // compound heterozygote
-          if (num_heterozygote == 2) {
+          if (num_heterozygote === 2) {
             num_minor_alleles.push(2);
             break;
           }
@@ -65,8 +65,8 @@
           na++;
         }
       }
-      if (num_minor_alleles.length == 1) {
-        if (num_heterozygote == 1) {
+      if (num_minor_alleles.length === 1) {
+        if (num_heterozygote === 1) {
           num_minor_alleles.push(1);
         } else if (na < MC1R_r.length) {
           num_minor_alleles.push(0);
@@ -622,14 +622,19 @@
         alert("No file selected!");
         return;
       }
-      data = data.split('\n');
-      if (data.length < 2 || data[1].length != 43 || data.length > 2) {
+      data = data.split('\r\n');
+      if (data.length < 2 || data[1].length != 43) {
         alert("File format error!");
         return;
       }
-
+      
       data = data[1].split(',').map(ele => parseInt(ele));
 
+      var MC1R_R = Math.min(data.slice(0, 7).reduce((a, b) => a + b, 0), 2);
+      var MC1R_r = Math.min(data.slice(7, 11).reduce((a, b) => a + b, 0), 2);
+
+      data = [MC1R_R, MC1R_r].concat(data.slice(11));
+      
       // update components
       enableBtn("upload_btn", false);
       var spinner = document.getElementsByClassName("glyphicon")[1];
